@@ -71,4 +71,12 @@ class MockData {
   static int getActiveCount() {
     return companies.where((c) => c.status == 'Active').length;
   }
+
+  static void addCompany(Company company) {
+    companies.insert(0, company);
+  }
+
+  static void deleteCompany(String id) {
+    companies.removeWhere((c) => c.id == id);
+  }
 }

@@ -1,16 +1,51 @@
 import 'package:flutter/material.dart';
 import '../models/company.dart';
+import '../data/mock_data.dart';
 
 class CompanyDetailScreen extends StatelessWidget {
   final Company company;
 
   const CompanyDetailScreen({super.key, required this.company});
 
+  void _deleteCompany(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('确认删除'),
+        content: Text('确定要删除 ${company.name} 吗？此操作无法撤销。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              MockData.deleteCompany(company.id);
+              Navigator.of(ctx).pop(); // Close dialog
+              Navigator.of(context).pop(true); // Return to previous screen with success flag
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('公司已删除')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(company.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deleteCompany(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -40,7 +75,7 @@ class CompanyDetailScreen extends StatelessWidget {
             radius: 40,
             backgroundColor: Colors.indigo,
             child: Text(
-              company.name.substring(0, 1),
+              company.name.isNotEmpty ? company.name.substring(0, 1) : '?',
               style: const TextStyle(fontSize: 32, color: Colors.white),
             ),
           ),
@@ -89,7 +124,9 @@ class CompanyDetailScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildInfoRow('投资金额', '¥${company.investmentAmount}M'),
           _buildInfoRow('当前估值', '¥${company.valuation}M'),
-          _buildInfoRow('回报倍数', '${(company.valuation / company.investmentAmount).toStringAsFixed(1)}x'),
+          _buildInfoRow('回报倍数', company.investmentAmount > 0 
+              ? '${(company.valuation / company.investmentAmount).toStringAsFixed(1)}x' 
+              : 'N/A'),
         ],
       ),
     );

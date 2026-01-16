@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../models/company.dart';
 import 'company_detail_screen.dart';
+import 'add_company_screen.dart';
 
 class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({super.key});
@@ -17,13 +18,19 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    _filteredCompanies = MockData.companies;
+    _loadData();
+  }
+
+  void _loadData() {
+    setState(() {
+      _filteredCompanies = List.from(MockData.companies);
+    });
   }
 
   void _filterCompanies(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredCompanies = MockData.companies;
+        _filteredCompanies = List.from(MockData.companies);
       } else {
         _filteredCompanies = MockData.companies
             .where((c) => c.name.toLowerCase().contains(query.toLowerCase()) ||
@@ -31,6 +38,31 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             .toList();
       }
     });
+  }
+
+  Future<void> _navigateToAddCompany() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddCompanyScreen()),
+    );
+
+    if (result == true) {
+      _filterCompanies(_searchController.text);
+    }
+  }
+
+  Future<void> _navigateToDetail(Company company) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CompanyDetailScreen(company: company),
+      ),
+    );
+
+    // Refresh list if returned (e.g. after delete)
+    if (result == true) {
+      _filterCompanies(_searchController.text);
+    }
   }
 
   @override
@@ -58,67 +90,57 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _filteredCompanies.length,
-              itemBuilder: (context, index) {
-                final company = _filteredCompanies[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.indigo,
-                      child: Text(
-                        company.name.substring(0, 1),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    title: Text(
-                      company.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('${company.sector} • ${company.stage}'),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '¥${company.investmentAmount}M',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
+            child: _filteredCompanies.isEmpty
+                ? const Center(child: Text('暂无相关公司'))
+                : ListView.builder(
+                    itemCount: _filteredCompanies.length,
+                    itemBuilder: (context, index) {
+                      final company = _filteredCompanies[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.indigo,
+                            child: Text(
+                              company.name.isNotEmpty ? company.name.substring(0, 1) : '?',
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                        Text(
-                          company.status,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: company.status == 'Active' ? Colors.blue : Colors.grey,
+                          title: Text(
+                            company.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CompanyDetailScreen(company: company),
+                          subtitle: Text('${company.sector} • ${company.stage}'),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '¥${company.investmentAmount}M',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              Text(
+                                company.status,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: company.status == 'Active' ? Colors.blue : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () => _navigateToDetail(company),
                         ),
                       );
                     },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to add company screen (placeholder)
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('添加公司功能待实现')),
-          );
-        },
+        onPressed: _navigateToAddCompany,
         child: const Icon(Icons.add),
       ),
     );
