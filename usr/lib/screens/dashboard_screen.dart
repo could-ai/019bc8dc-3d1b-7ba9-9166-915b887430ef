@@ -13,19 +13,22 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('VC 管理仪表盘'),
+        title: const Text('仪表盘'),
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '概览',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              '投资概览',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -33,23 +36,23 @@ class DashboardScreen extends StatelessWidget {
                     context,
                     '总投资额',
                     '¥${totalInvestment.toStringAsFixed(1)}M',
-                    Icons.monetization_on,
-                    Colors.blue,
+                    Icons.monetization_on_rounded,
+                    const Color(0xFF10B981), // Emerald
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: _buildStatCard(
                     context,
                     '被投企业',
                     '$totalCount 家',
-                    Icons.business,
-                    Colors.orange,
+                    Icons.business_rounded,
+                    const Color(0xFFF59E0B), // Amber
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -57,28 +60,31 @@ class DashboardScreen extends StatelessWidget {
                     context,
                     '运营中',
                     '$activeCount 家',
-                    Icons.trending_up,
-                    Colors.green,
+                    Icons.trending_up_rounded,
+                    const Color(0xFF3B82F6), // Blue
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: _buildStatCard(
                     context,
                     '已退出',
                     '${totalCount - activeCount} 家',
-                    Icons.exit_to_app,
-                    Colors.purple,
+                    Icons.exit_to_app_rounded,
+                    const Color(0xFF8B5CF6), // Violet
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            const Text(
+            const SizedBox(height: 32),
+            Text(
               '近期动态',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _buildRecentActivityList(),
           ],
         ),
@@ -88,18 +94,18 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        gradient: LinearGradient(
+          colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,17 +113,24 @@ class DashboardScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, color: color, size: 28),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
               Text(
                 title,
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w500),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -134,15 +147,52 @@ class DashboardScreen extends StatelessWidget {
 
     return Column(
       children: activities.map((activity) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 10),
-          child: ListTile(
-            leading: const CircleAvatar(
-              backgroundColor: Colors.blueGrey,
-              child: Icon(Icons.notifications, color: Colors.white, size: 20),
-            ),
-            title: Text(activity['title']!),
-            subtitle: Text(activity['date']!),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.notifications_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      activity['title']!,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      activity['date']!,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       }).toList(),

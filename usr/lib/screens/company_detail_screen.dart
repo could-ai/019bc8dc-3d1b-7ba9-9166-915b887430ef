@@ -24,7 +24,14 @@ class CompanyDetailScreen extends StatelessWidget {
               Navigator.of(ctx).pop(); // Close dialog
               Navigator.of(context).pop(true); // Return to previous screen with success flag
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('公司已删除')),
+                SnackBar(
+                  content: const Text('公司已删除'),
+                  backgroundColor: Colors.red[400],
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -40,9 +47,10 @@ class CompanyDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(company.name),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete_outline),
             onPressed: () => _deleteCompany(context),
           ),
         ],
@@ -52,11 +60,11 @@ class CompanyDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context),
-            const Divider(),
+            const SizedBox(height: 24),
             _buildInfoSection(),
-            const Divider(),
+            const SizedBox(height: 24),
             _buildFinancialSection(),
-            const Divider(),
+            const SizedBox(height: 24),
             _buildDescriptionSection(),
           ],
         ),
@@ -66,30 +74,67 @@ class CompanyDetailScreen extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      color: Colors.indigo.shade50,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            Theme.of(context).colorScheme.primary.withOpacity(0.05),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
       width: double.infinity,
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.indigo,
-            child: Text(
-              company.name.isNotEmpty ? company.name.substring(0, 1) : '?',
-              style: const TextStyle(fontSize: 32, color: Colors.white),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                company.name.isNotEmpty ? company.name.substring(0, 1).toUpperCase() : '?',
+                style: const TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             company.name,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-          const SizedBox(height: 8),
-          Chip(
-            label: Text(company.status),
-            backgroundColor: company.status == 'Active' ? Colors.green.shade100 : Colors.grey.shade200,
-            labelStyle: TextStyle(
-              color: company.status == 'Active' ? Colors.green.shade800 : Colors.grey.shade800,
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: company.status == 'Active'
+                  ? const Color(0xFF10B981).withOpacity(0.1)
+                  : Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              company.status,
+              style: TextStyle(
+                fontSize: 14,
+                color: company.status == 'Active'
+                    ? const Color(0xFF10B981)
+                    : Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -99,16 +144,43 @@ class CompanyDetailScreen extends StatelessWidget {
 
   Widget _buildInfoSection() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('基本信息', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            '基本信息',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildInfoRow('行业', company.sector),
-          _buildInfoRow('轮次', company.stage),
-          _buildInfoRow('创始人', company.founder),
-          _buildInfoRow('投资日期', company.investmentDate.toString().split(' ')[0]),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildInfoRow('行业', company.sector),
+                const Divider(height: 24),
+                _buildInfoRow('轮次', company.stage),
+                const Divider(height: 24),
+                _buildInfoRow('创始人', company.founder),
+                const Divider(height: 24),
+                _buildInfoRow('投资日期', company.investmentDate.toString().split(' ')[0]),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -116,17 +188,43 @@ class CompanyDetailScreen extends StatelessWidget {
 
   Widget _buildFinancialSection() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('财务数据', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            '财务数据',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildInfoRow('投资金额', '¥${company.investmentAmount}M'),
-          _buildInfoRow('当前估值', '¥${company.valuation}M'),
-          _buildInfoRow('回报倍数', company.investmentAmount > 0 
-              ? '${(company.valuation / company.investmentAmount).toStringAsFixed(1)}x' 
-              : 'N/A'),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildInfoRow('投资金额', '¥${company.investmentAmount}M'),
+                const Divider(height: 24),
+                _buildInfoRow('当前估值', '¥${company.valuation}M'),
+                const Divider(height: 24),
+                _buildInfoRow('回报倍数', company.investmentAmount > 0 
+                    ? '${(company.valuation / company.investmentAmount).toStringAsFixed(1)}x' 
+                    : 'N/A'),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -134,15 +232,39 @@ class CompanyDetailScreen extends StatelessWidget {
 
   Widget _buildDescriptionSection() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('公司简介', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
           Text(
-            company.description,
-            style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+            '公司简介',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              company.description,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.6,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+              ),
+            ),
           ),
         ],
       ),
@@ -150,15 +272,22 @@ class CompanyDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 16)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }

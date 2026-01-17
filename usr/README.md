@@ -1,6 +1,6 @@
-# couldai_user_app
+# CouldAI Ventures
 
-A new Flutter project.
+A modern VC portfolio management application powered by CouldAI for tracking investments and company performance.
 
 ## Getting Started
 
