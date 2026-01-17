@@ -85,7 +85,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildRecentActivityList(),
+            _buildRecentActivityList(context),
           ],
         ),
       ),
@@ -137,7 +137,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentActivityList() {
+  Widget _buildRecentActivityList(BuildContext context) {
     // Mock recent activities
     final activities = [
       {'title': 'Future AI 完成 A 轮融资', 'date': '2023-10-01'},

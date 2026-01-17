@@ -61,11 +61,12 @@ class CompanyDetailScreen extends StatelessWidget {
           children: [
             _buildHeader(context),
             const SizedBox(height: 24),
-            _buildInfoSection(),
+            _buildInfoSection(context),
             const SizedBox(height: 24),
-            _buildFinancialSection(),
+            _buildFinancialSection(context),
             const SizedBox(height: 24),
-            _buildDescriptionSection(),
+            _buildDescriptionSection(context),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -101,6 +102,13 @@ class CompanyDetailScreen extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Center(
               child: Text(
@@ -125,6 +133,11 @@ class CompanyDetailScreen extends StatelessWidget {
                   ? const Color(0xFF10B981).withOpacity(0.1)
                   : Colors.grey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: company.status == 'Active'
+                    ? const Color(0xFF10B981).withOpacity(0.2)
+                    : Colors.grey.withOpacity(0.2),
+              ),
             ),
             child: Text(
               company.status,
@@ -142,7 +155,7 @@ class CompanyDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection() {
+  Widget _buildInfoSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -160,24 +173,24 @@ class CompanyDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Column(
               children: [
-                _buildInfoRow('行业', company.sector),
+                _buildInfoRow(context, '行业', company.sector),
                 const Divider(height: 24),
-                _buildInfoRow('轮次', company.stage),
+                _buildInfoRow(context, '轮次', company.stage),
                 const Divider(height: 24),
-                _buildInfoRow('创始人', company.founder),
+                _buildInfoRow(context, '创始人', company.founder),
                 const Divider(height: 24),
-                _buildInfoRow('投资日期', company.investmentDate.toString().split(' ')[0]),
+                _buildInfoRow(context, '投资日期', company.investmentDate.toString().split(' ')[0]),
               ],
             ),
           ),
@@ -186,7 +199,7 @@ class CompanyDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFinancialSection() {
+  Widget _buildFinancialSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -204,22 +217,22 @@ class CompanyDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Column(
               children: [
-                _buildInfoRow('投资金额', '¥${company.investmentAmount}M'),
+                _buildInfoRow(context, '投资金额', '¥${company.investmentAmount}M'),
                 const Divider(height: 24),
-                _buildInfoRow('当前估值', '¥${company.valuation}M'),
+                _buildInfoRow(context, '当前估值', '¥${company.valuation}M'),
                 const Divider(height: 24),
-                _buildInfoRow('回报倍数', company.investmentAmount > 0 
+                _buildInfoRow(context, '回报倍数', company.investmentAmount > 0 
                     ? '${(company.valuation / company.investmentAmount).toStringAsFixed(1)}x' 
                     : 'N/A'),
               ],
@@ -230,7 +243,7 @@ class CompanyDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -248,12 +261,12 @@ class CompanyDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -271,7 +284,7 @@ class CompanyDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
